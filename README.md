@@ -1,14 +1,26 @@
-app/
-│
-├── layout.tsx
-├── page.tsx
-│
-├── components/
-│   ├── CounterCard.tsx
-│   └── WalletConnect.tsx
-│
-├── hooks/
-│   └── useCounter.ts
-│
-└── utils/
-    └── anchorClient.ts
+{
+  "name": "solana-counter-dapp",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "next": "14.1.0",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+
+    "@coral-xyz/anchor": "^0.29.0",
+    "@solana/web3.js": "^1.92.0",
+    "@solana/spl-token": "^0.4.6",
+
+    "@solana/wallet-adapter-base": "^0.9.23",
+    "@solana/wallet-adapter-react": "^0.15.35",
+    "@solana/wallet-adapter-react-ui": "^0.9.35",
+    "@solana/wallet-adapter-wallets": "^0.19.32",
+
+    "bs58": "^5.0.0"
+  }
+}
