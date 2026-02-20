@@ -1,11 +1,20 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';
-import App from './App';
+import "./globals.css";
+import { ReactNode } from "react";
+import { WalletContextProvider } from "../components/WalletContextProvider";
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-);
+export const metadata = {
+  title: "Solana Counter dApp",
+  description: "PDA-based counter with authority and token-gated increments",
+};
+
+export default function RootLayout({ children }: { children: ReactNode }) {
+  return (
+    <html lang="en">
+      <body>
+        <WalletContextProvider>
+          {children}
+        </WalletContextProvider>
+      </body>
+    </html>
+  );
+}
