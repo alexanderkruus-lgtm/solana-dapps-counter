@@ -5,6 +5,7 @@ import WalletConnect from "../components/WalletConnect";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { useCounter } from "../hooks/useCounter";
 import { program, web3 } from "../utils/anchorClient";
+import { Analytics } from "@vercel/analytics/react";
 
 export default function Home() {
   const { publicKey } = useWallet();
@@ -13,6 +14,7 @@ export default function Home() {
     return (
       <div className="main-container">
         <WalletConnect />
+        <Analytics />
       </div>
     );
   }
@@ -32,6 +34,7 @@ export default function Home() {
           counterPda={counterPda}
         />
       </div>
+      <Analytics />
     </div>
   );
 }

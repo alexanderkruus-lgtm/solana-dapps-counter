@@ -1,20 +1,25 @@
+# Solana Counter dApp
 
-A fully‑featured, production‑ready Solana decentralized application built with:
+A minimal, production-ready Solana + Anchor counter program with a Next.js frontend and wallet integration.
 
-- **Anchor** (on‑chain program)
-- **PDA‑based counter accounts**
-- **Authority‑gated updates**
-- **Token‑gated increments**
-- **Next.js App Router**
-- **Solana Wallet Adapter**
-- **Modular hooks + components**
-- **Scripts for initialization and interaction**
-
-This project is designed in a clean, scalable, Scandinavian‑minimalist architecture suitable for real‑world Solana products.
+## Features
+- Anchor program with PDA-based per-user counters
+- Increment / decrement instructions
+- Next.js frontend with Wallet Adapter
+- Clean repo structure ready for GitHub
 
 ---
 
-## ✨ Features
+## Prerequisites
+- Rust + Cargo
+- Solana CLI
+- Anchor CLI
+- Node.js (18+)
 
-### 🔐 PDA‑Based Counter
-Each counter is derived using:
+---
+
+## Setup
+
+```bash
+git clone <repo-url>
+cd solana-counter
