@@ -7,10 +7,10 @@ import {
   useConnection,
   useWallet,
 } from "@solana/wallet-adapter-react";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 
 import type { Counter } from "@/anchor/idl";
-import Idl from "@/anchor/idl.json";
+import IdlJson from "@/anchor/idl.json";
 
 interface UseProgramReturn {
   program: anchor.Program<Counter>;
@@ -29,20 +29,30 @@ export function useProgram(): UseProgramReturn {
   const { connection } = useConnection();
   const wallet = useAnchorWallet();
 
-  let program: anchor.Program<Counter>;
-  if (wallet) {
-    const provider = new anchor.AnchorProvider(connection, wallet, {
-      preflightCommitment: "confirmed",
-    });
-    program = new anchor.Program<Counter>(Idl as Counter, provider);
-  } else {
-    program = new anchor.Program<Counter>(Idl as Counter, { connection });
-  }
+  const program = useMemo(() => {
+    if (wallet) {
+      const provider = new anchor.AnchorProvider(connection, wallet, {
+        preflightCommitment: "confirmed",
+      });
+      return new anchor.Program<Counter>(
+        IdlJson as unknown as Counter,
+        provider
+      );
+    }
+    return new anchor.Program<Counter>(
+      IdlJson as unknown as Counter,
+      { connection }
+    );
+  }, [wallet, connection]);
 
-  const counterAddress = PublicKey.findProgramAddressSync(
-    [Buffer.from("counter")],
-    new PublicKey(Idl.address)
-  )[0];
+  const counterAddress = useMemo(
+    () =>
+      PublicKey.findProgramAddressSync(
+        [Buffer.from("counter")],
+        new PublicKey(IdlJson.address)
+      )[0],
+    []
+  );
 
   // Auto-airdrop devnet SOL if balance is low
   useEffect(() => {
