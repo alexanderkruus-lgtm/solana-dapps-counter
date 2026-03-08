@@ -66,7 +66,8 @@ export function CounterCard() {
             onDecrement={decrement}
             isIncrementing={isIncrementing}
             isDecrementing={isDecrementing}
-            disabled={!connected || count === null}
+            disabled={!connected}
+            disableDecrement={count === null || count === 0}
           />
         )}
       </CardContent>

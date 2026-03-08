@@ -9,6 +9,7 @@ interface CounterButtonsProps {
   isIncrementing: boolean;
   isDecrementing: boolean;
   disabled: boolean;
+  disableDecrement?: boolean;
 }
 
 export function CounterButtons({
@@ -17,6 +18,7 @@ export function CounterButtons({
   isIncrementing,
   isDecrementing,
   disabled,
+  disableDecrement = false,
 }: CounterButtonsProps) {
   return (
     <div className="flex items-center gap-3">
@@ -25,7 +27,7 @@ export function CounterButtons({
         size="lg"
         className="flex-1 gap-2 h-12 text-base border-border/50 hover:border-red-500/50 hover:text-red-400 hover:bg-red-500/10 transition-colors"
         onClick={onDecrement}
-        disabled={disabled || isDecrementing}
+        disabled={disabled || isDecrementing || disableDecrement}
       >
         {isDecrementing ? (
           <Loader2 className="h-5 w-5 animate-spin" />

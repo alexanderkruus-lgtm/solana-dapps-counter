@@ -86,13 +86,16 @@ export function useCounter(
     setError(null);
     try {
       const vault = getVaultAddress(publicKey);
+      console.log("[v0] increment - user:", publicKey.toBase58());
+      console.log("[v0] increment - counter:", counterAddress.toBase58());
+      console.log("[v0] increment - vault:", vault.toBase58());
       const tx = await program.methods
         .increment()
-        .accountsStrict({
+        .accounts({
           user: publicKey,
           counter: counterAddress,
           vault,
-          systemProgram: SystemProgram.programId,
+          system_program: SystemProgram.programId,
         })
         .rpc();
       toast.success("Counter incremented!", {
@@ -119,13 +122,16 @@ export function useCounter(
     setError(null);
     try {
       const vault = getVaultAddress(publicKey);
+      console.log("[v0] decrement - user:", publicKey.toBase58());
+      console.log("[v0] decrement - counter:", counterAddress.toBase58());
+      console.log("[v0] decrement - vault:", vault.toBase58());
       const tx = await program.methods
         .decrement()
-        .accountsStrict({
+        .accounts({
           user: publicKey,
           counter: counterAddress,
           vault,
-          systemProgram: SystemProgram.programId,
+          system_program: SystemProgram.programId,
         })
         .rpc();
       toast.success("Counter decremented!", {
