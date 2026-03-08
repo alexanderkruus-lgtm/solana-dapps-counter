@@ -77,17 +77,6 @@ export function useCounter(
     setIsIncrementing(true);
     setError(null);
     try {
-      console.log("[v0] increment called");
-      console.log("[v0] publicKey:", publicKey.toBase58());
-      console.log("[v0] program.programId:", program.programId.toBase58());
-      console.log("[v0] counterAddress:", counterAddress.toBase58());
-      console.log("[v0] provider type:", program.provider.constructor.name);
-      
-      // Check if we have a proper wallet provider
-      const provider = program.provider as { wallet?: { publicKey?: { toBase58(): string } } };
-      console.log("[v0] provider.wallet:", provider.wallet);
-      console.log("[v0] provider.wallet.publicKey:", provider.wallet?.publicKey?.toBase58());
-      
       // Anchor 0.30+ auto-resolves PDAs (counter, vault) from IDL seeds
       // We only need to pass the signer account
       const tx = await program.methods
@@ -97,7 +86,6 @@ export function useCounter(
         })
         .rpc();
       
-      console.log("[v0] tx success:", tx);
       toast.success("Counter incremented!", {
         description: "View on Solana Explorer",
         action: {
@@ -107,14 +95,16 @@ export function useCounter(
       });
       await fetchCount();
     } catch (err: unknown) {
-      console.log("[v0] increment error:", err);
-      console.log("[v0] error name:", (err as Error)?.name);
-      console.log("[v0] error message:", (err as Error)?.message);
       const message =
         err instanceof Error ? err.message : "Transaction failed";
+      const errorName = (err as Error)?.name || "";
       
-      // Handle user cancellation gracefully
-      if (message.includes("User rejected") || message.includes("WalletSignTransactionError")) {
+      // Handle wallet signing errors - common in iframes/preview environments
+      if (errorName === "WalletSignTransactionError" || message.includes("WalletSignTransactionError")) {
+        toast.error("Wallet signing failed", { 
+          description: "If in preview, deploy to Vercel and test from the deployed URL. Wallet extensions may not work in iframes." 
+        });
+      } else if (message.includes("User rejected")) {
         toast.error("Transaction cancelled", { description: "You cancelled the transaction in your wallet" });
       } else {
         toast.error("Increment failed", { description: message });
@@ -122,7 +112,7 @@ export function useCounter(
     } finally {
       setIsIncrementing(false);
     }
-  }, [program, publicKey, counterAddress, fetchCount]);
+  }, [program, publicKey, fetchCount]);
 
   const decrement = useCallback(async () => {
     if (!publicKey) {
@@ -151,8 +141,14 @@ export function useCounter(
     } catch (err: unknown) {
       const message =
         err instanceof Error ? err.message : "Transaction failed";
-      // Handle user cancellation gracefully
-      if (message.includes("User rejected") || message.includes("WalletSignTransactionError")) {
+      const errorName = (err as Error)?.name || "";
+      
+      // Handle wallet signing errors - common in iframes/preview environments
+      if (errorName === "WalletSignTransactionError" || message.includes("WalletSignTransactionError")) {
+        toast.error("Wallet signing failed", { 
+          description: "If in preview, deploy to Vercel and test from the deployed URL. Wallet extensions may not work in iframes." 
+        });
+      } else if (message.includes("User rejected")) {
         toast.error("Transaction cancelled", { description: "You cancelled the transaction in your wallet" });
       } else {
         toast.error("Decrement failed", { description: message });
