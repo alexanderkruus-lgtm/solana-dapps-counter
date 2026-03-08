@@ -70,10 +70,18 @@ export function useCounter(
   }, [program, counterAddress, fetchCount]);
 
   const increment = useCallback(async () => {
-    if (!publicKey) return;
+    if (!publicKey) {
+      toast.error("Wallet not connected");
+      return;
+    }
     setIsIncrementing(true);
     setError(null);
     try {
+      console.log("[v0] Starting increment transaction...");
+      console.log("[v0] Public key:", publicKey.toBase58());
+      console.log("[v0] Program ID:", program.programId.toBase58());
+      console.log("[v0] Counter address:", counterAddress.toBase58());
+      
       // Anchor 0.30+ auto-resolves PDAs (counter, vault) from IDL seeds
       // We only need to pass the signer account
       const tx = await program.methods
@@ -82,6 +90,8 @@ export function useCounter(
           user: publicKey,
         })
         .rpc();
+      
+      console.log("[v0] Transaction successful:", tx);
       toast.success("Counter incremented!", {
         description: "View on Solana Explorer",
         action: {
@@ -91,19 +101,32 @@ export function useCounter(
       });
       await fetchCount();
     } catch (err: unknown) {
+      console.log("[v0] Increment error:", err);
       const message =
         err instanceof Error ? err.message : "Transaction failed";
-      toast.error("Increment failed", { description: message });
+      
+      // Handle user cancellation gracefully
+      if (message.includes("User rejected") || message.includes("WalletSignTransactionError")) {
+        toast.error("Transaction cancelled", { description: "You cancelled the transaction in your wallet" });
+      } else {
+        toast.error("Increment failed", { description: message });
+      }
     } finally {
       setIsIncrementing(false);
     }
-  }, [program, publicKey, fetchCount]);
+  }, [program, publicKey, counterAddress, fetchCount]);
 
   const decrement = useCallback(async () => {
-    if (!publicKey) return;
+    if (!publicKey) {
+      toast.error("Wallet not connected");
+      return;
+    }
     setIsDecrementing(true);
     setError(null);
     try {
+      console.log("[v0] Starting decrement transaction...");
+      console.log("[v0] Public key:", publicKey.toBase58());
+      
       // Anchor 0.30+ auto-resolves PDAs (counter, vault) from IDL seeds
       // We only need to pass the signer account
       const tx = await program.methods
@@ -112,6 +135,8 @@ export function useCounter(
           user: publicKey,
         })
         .rpc();
+      
+      console.log("[v0] Transaction successful:", tx);
       toast.success("Counter decremented!", {
         description: "View on Solana Explorer",
         action: {
@@ -121,9 +146,16 @@ export function useCounter(
       });
       await fetchCount();
     } catch (err: unknown) {
+      console.log("[v0] Decrement error:", err);
       const message =
         err instanceof Error ? err.message : "Transaction failed";
-      toast.error("Decrement failed", { description: message });
+      
+      // Handle user cancellation gracefully
+      if (message.includes("User rejected") || message.includes("WalletSignTransactionError")) {
+        toast.error("Transaction cancelled", { description: "You cancelled the transaction in your wallet" });
+      } else {
+        toast.error("Decrement failed", { description: message });
+      }
     } finally {
       setIsDecrementing(false);
     }
