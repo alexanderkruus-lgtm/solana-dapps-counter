@@ -1,8 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import * as anchor from "@coral-xyz/anchor";
-import { PublicKey, SystemProgram } from "@solana/web3.js";
+import type * as anchor from "@coral-xyz/anchor";
+import type { PublicKey } from "@solana/web3.js";
 import type { Counter } from "@/anchor/idl";
 import { toast } from "sonner";
 
@@ -47,7 +47,6 @@ export function useCounter(
       ) {
         setCount(null);
       } else {
-        console.log("[v0] fetchCount error:", message);
         setError("Failed to fetch counter");
       }
     } finally {
@@ -70,32 +69,17 @@ export function useCounter(
     };
   }, [program, counterAddress, fetchCount]);
 
-  const getVaultAddress = useCallback(
-    (user: PublicKey): PublicKey => {
-      return PublicKey.findProgramAddressSync(
-        [Buffer.from("vault"), user.toBuffer()],
-        program.programId
-      )[0];
-    },
-    [program.programId]
-  );
-
   const increment = useCallback(async () => {
     if (!publicKey) return;
     setIsIncrementing(true);
     setError(null);
     try {
-      const vault = getVaultAddress(publicKey);
-      console.log("[v0] increment - user:", publicKey.toBase58());
-      console.log("[v0] increment - counter:", counterAddress.toBase58());
-      console.log("[v0] increment - vault:", vault.toBase58());
+      // Anchor 0.30+ auto-resolves PDAs (counter, vault) from IDL seeds
+      // We only need to pass the signer account
       const tx = await program.methods
         .increment()
         .accounts({
           user: publicKey,
-          counter: counterAddress,
-          vault,
-          system_program: SystemProgram.programId,
         })
         .rpc();
       toast.success("Counter incremented!", {
@@ -109,29 +93,23 @@ export function useCounter(
     } catch (err: unknown) {
       const message =
         err instanceof Error ? err.message : "Transaction failed";
-      console.log("[v0] increment error:", message);
       toast.error("Increment failed", { description: message });
     } finally {
       setIsIncrementing(false);
     }
-  }, [program, publicKey, counterAddress, fetchCount, getVaultAddress]);
+  }, [program, publicKey, fetchCount]);
 
   const decrement = useCallback(async () => {
     if (!publicKey) return;
     setIsDecrementing(true);
     setError(null);
     try {
-      const vault = getVaultAddress(publicKey);
-      console.log("[v0] decrement - user:", publicKey.toBase58());
-      console.log("[v0] decrement - counter:", counterAddress.toBase58());
-      console.log("[v0] decrement - vault:", vault.toBase58());
+      // Anchor 0.30+ auto-resolves PDAs (counter, vault) from IDL seeds
+      // We only need to pass the signer account
       const tx = await program.methods
         .decrement()
         .accounts({
           user: publicKey,
-          counter: counterAddress,
-          vault,
-          system_program: SystemProgram.programId,
         })
         .rpc();
       toast.success("Counter decremented!", {
@@ -145,12 +123,11 @@ export function useCounter(
     } catch (err: unknown) {
       const message =
         err instanceof Error ? err.message : "Transaction failed";
-      console.log("[v0] decrement error:", message);
       toast.error("Decrement failed", { description: message });
     } finally {
       setIsDecrementing(false);
     }
-  }, [program, publicKey, counterAddress, fetchCount, getVaultAddress]);
+  }, [program, publicKey, fetchCount]);
 
   return {
     count,
