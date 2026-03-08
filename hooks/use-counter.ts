@@ -86,8 +86,8 @@ export function useCounter(
         })
         .rpc();
       
-      toast.success("Counter incremented!", {
-        description: "View on Solana Explorer",
+      toast.success("+1 SOL added!", {
+        description: "View transaction on Solana Explorer",
         action: {
           label: "View TX",
           onClick: () => window.open(getExplorerUrl(tx), "_blank"),
@@ -130,8 +130,8 @@ export function useCounter(
           user: publicKey,
         })
         .rpc();
-      toast.success("Counter decremented!", {
-        description: "View on Solana Explorer",
+      toast.success("-1 SOL removed!", {
+        description: "View transaction on Solana Explorer",
         action: {
           label: "View TX",
           onClick: () => window.open(getExplorerUrl(tx), "_blank"),

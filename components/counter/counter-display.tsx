@@ -31,10 +31,13 @@ export function CounterDisplay({ count, isLoading }: CounterDisplayProps) {
 
   return (
     <div className="flex flex-col items-center justify-center py-8">
-      <p className="text-7xl font-mono font-bold tracking-tighter text-foreground tabular-nums">
-        {count.toLocaleString()}
-      </p>
-      <p className="text-sm text-muted-foreground mt-2">current count</p>
+      <div className="flex items-baseline gap-2">
+        <p className="text-7xl font-mono font-bold tracking-tighter text-foreground tabular-nums">
+          {count.toLocaleString()}
+        </p>
+        <span className="text-2xl font-semibold text-[#14F195]">SOL</span>
+      </div>
+      <p className="text-sm text-muted-foreground mt-2">+1 SOL per increment</p>
     </div>
   );
 }

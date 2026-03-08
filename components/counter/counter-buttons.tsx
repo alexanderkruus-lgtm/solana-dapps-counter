@@ -34,7 +34,7 @@ export function CounterButtons({
         ) : (
           <Minus className="h-5 w-5" />
         )}
-        Decrement
+        -1 SOL
       </Button>
       <Button
         size="lg"
@@ -47,7 +47,7 @@ export function CounterButtons({
         ) : (
           <Plus className="h-5 w-5" />
         )}
-        Increment
+        +1 SOL
       </Button>
     </div>
   );
