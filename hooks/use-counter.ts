@@ -1,8 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import * as anchor from "@coral-xyz/anchor";
-import { PublicKey, SystemProgram } from "@solana/web3.js";
+import type * as anchor from "@coral-xyz/anchor";
+import type { PublicKey } from "@solana/web3.js";
 import type { Counter } from "@/anchor/idl";
 import { toast } from "sonner";
 
@@ -47,7 +47,6 @@ export function useCounter(
       ) {
         setCount(null);
       } else {
-        console.log("[v0] fetchCount error:", message);
         setError("Failed to fetch counter");
       }
     } finally {
@@ -70,33 +69,25 @@ export function useCounter(
     };
   }, [program, counterAddress, fetchCount]);
 
-  const getVaultAddress = useCallback(
-    (user: PublicKey): PublicKey => {
-      return PublicKey.findProgramAddressSync(
-        [Buffer.from("vault"), user.toBuffer()],
-        program.programId
-      )[0];
-    },
-    [program.programId]
-  );
-
   const increment = useCallback(async () => {
-    if (!publicKey) return;
+    if (!publicKey) {
+      toast.error("Wallet not connected");
+      return;
+    }
     setIsIncrementing(true);
     setError(null);
     try {
-      const vault = getVaultAddress(publicKey);
+      // Anchor 0.30+ auto-resolves PDAs (counter, vault) from IDL seeds
+      // We only need to pass the signer account
       const tx = await program.methods
         .increment()
-        .accountsStrict({
+        .accounts({
           user: publicKey,
-          counter: counterAddress,
-          vault,
-          systemProgram: SystemProgram.programId,
         })
         .rpc();
-      toast.success("Counter incremented!", {
-        description: "View on Solana Explorer",
+      
+      toast.success("+1 SOL added!", {
+        description: "View transaction on Solana Explorer",
         action: {
           label: "View TX",
           onClick: () => window.open(getExplorerUrl(tx), "_blank"),
@@ -106,30 +97,41 @@ export function useCounter(
     } catch (err: unknown) {
       const message =
         err instanceof Error ? err.message : "Transaction failed";
-      console.log("[v0] increment error:", message);
-      toast.error("Increment failed", { description: message });
+      const errorName = (err as Error)?.name || "";
+      
+      // Handle wallet signing errors - common in iframes/preview environments
+      if (errorName === "WalletSignTransactionError" || message.includes("WalletSignTransactionError")) {
+        toast.error("Wallet signing failed", { 
+          description: "If in preview, deploy to Vercel and test from the deployed URL. Wallet extensions may not work in iframes." 
+        });
+      } else if (message.includes("User rejected")) {
+        toast.error("Transaction cancelled", { description: "You cancelled the transaction in your wallet" });
+      } else {
+        toast.error("Increment failed", { description: message });
+      }
     } finally {
       setIsIncrementing(false);
     }
-  }, [program, publicKey, counterAddress, fetchCount, getVaultAddress]);
+  }, [program, publicKey, fetchCount]);
 
   const decrement = useCallback(async () => {
-    if (!publicKey) return;
+    if (!publicKey) {
+      toast.error("Wallet not connected");
+      return;
+    }
     setIsDecrementing(true);
     setError(null);
     try {
-      const vault = getVaultAddress(publicKey);
+      // Anchor 0.30+ auto-resolves PDAs (counter, vault) from IDL seeds
+      // We only need to pass the signer account
       const tx = await program.methods
         .decrement()
-        .accountsStrict({
+        .accounts({
           user: publicKey,
-          counter: counterAddress,
-          vault,
-          systemProgram: SystemProgram.programId,
         })
         .rpc();
-      toast.success("Counter decremented!", {
-        description: "View on Solana Explorer",
+      toast.success("-1 SOL removed!", {
+        description: "View transaction on Solana Explorer",
         action: {
           label: "View TX",
           onClick: () => window.open(getExplorerUrl(tx), "_blank"),
@@ -139,12 +141,22 @@ export function useCounter(
     } catch (err: unknown) {
       const message =
         err instanceof Error ? err.message : "Transaction failed";
-      console.log("[v0] decrement error:", message);
-      toast.error("Decrement failed", { description: message });
+      const errorName = (err as Error)?.name || "";
+      
+      // Handle wallet signing errors - common in iframes/preview environments
+      if (errorName === "WalletSignTransactionError" || message.includes("WalletSignTransactionError")) {
+        toast.error("Wallet signing failed", { 
+          description: "If in preview, deploy to Vercel and test from the deployed URL. Wallet extensions may not work in iframes." 
+        });
+      } else if (message.includes("User rejected")) {
+        toast.error("Transaction cancelled", { description: "You cancelled the transaction in your wallet" });
+      } else {
+        toast.error("Decrement failed", { description: message });
+      }
     } finally {
       setIsDecrementing(false);
     }
-  }, [program, publicKey, counterAddress, fetchCount, getVaultAddress]);
+  }, [program, publicKey, fetchCount]);
 
   return {
     count,

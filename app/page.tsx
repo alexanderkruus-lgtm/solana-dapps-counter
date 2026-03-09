@@ -3,6 +3,7 @@
 import { SolanaProvider } from "@/components/solana/solana-provider";
 import { WalletButton } from "@/components/solana/wallet-button";
 import { CounterCard } from "@/components/counter/counter-card";
+import { TransferCard } from "@/components/transfer/transfer-card";
 import { Toaster } from "sonner";
 
 export default function Home() {
@@ -21,8 +22,9 @@ export default function Home() {
           <WalletButton />
         </header>
 
-        <section className="relative w-full max-w-md">
+        <section className="relative w-full max-w-md flex flex-col gap-6">
           <CounterCard />
+          <TransferCard />
         </section>
 
         <footer className="relative text-center text-xs text-muted-foreground/50 space-y-1">

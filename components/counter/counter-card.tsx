@@ -13,7 +13,7 @@ import { CounterDisplay } from "./counter-display";
 import { CounterButtons } from "./counter-buttons";
 import { useProgram } from "@/hooks/use-program";
 import { useCounter } from "@/hooks/use-counter";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, Info } from "lucide-react";
 
 export function CounterCard() {
   const { program, counterAddress, publicKey, connected } = useProgram();
@@ -47,6 +47,16 @@ export function CounterCard() {
       </CardHeader>
 
       <CardContent className="space-y-6">
+        {/* Notice about iframe limitations */}
+        {typeof window !== "undefined" && window.self !== window.top && (
+          <div className="flex items-start gap-2 rounded-lg bg-blue-500/10 border border-blue-500/20 p-3 text-xs text-blue-300">
+            <Info className="h-4 w-4 flex-shrink-0 mt-0.5" />
+            <span>
+              Wallet transactions may fail in preview. Click <strong>Publish</strong> to deploy and test from the live URL.
+            </span>
+          </div>
+        )}
+        
         <CounterDisplay count={count} isLoading={isLoading} />
 
         {error && (
@@ -66,7 +76,8 @@ export function CounterCard() {
             onDecrement={decrement}
             isIncrementing={isIncrementing}
             isDecrementing={isDecrementing}
-            disabled={!connected || count === null}
+            disabled={!connected}
+            disableDecrement={count === null || count === 0}
           />
         )}
       </CardContent>
