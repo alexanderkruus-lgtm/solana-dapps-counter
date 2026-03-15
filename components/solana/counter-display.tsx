@@ -13,35 +13,47 @@ export function CounterDisplay() {
 
   return (
     <div className="flex flex-col items-center gap-8 w-full max-w-md mx-auto">
-      {/* Wallet Connection */}
-      <Card className="w-full border-border/50 bg-card/50 backdrop-blur-sm">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-medium text-muted-foreground">
-            Wallet Connection
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="flex flex-col gap-4">
-          <div className="flex items-center justify-between">
-            <WalletMultiButton className="!bg-primary !text-primary-foreground hover:!bg-primary/90 !rounded-lg !h-10 !text-sm !font-medium" />
-            {connected && balance !== null && (
-              <div className="text-sm text-muted-foreground">
-                <span className="text-foreground font-mono">{balance.toFixed(4)}</span> SOL
-              </div>
-            )}
+      {/* Wallet Connection - Prominent Hero Section */}
+      {!connected ? (
+        <div className="w-full flex flex-col items-center gap-5 py-8 px-6 rounded-2xl border-2 border-dashed border-primary/60 bg-primary/10">
+          <div className="w-16 h-16 rounded-full bg-primary/20 flex items-center justify-center">
+            <svg className="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+            </svg>
           </div>
-          {!connected && (
-            <p className="text-sm text-muted-foreground">
-              Connect your wallet to receive devnet SOL airdrops
+          <div className="text-center">
+            <h2 className="text-2xl font-bold text-foreground mb-2">Connect Your Wallet</h2>
+            <p className="text-muted-foreground">
+              Connect to start receiving 1 SOL per click on Devnet
             </p>
-          )}
-        </CardContent>
-      </Card>
+          </div>
+          <WalletMultiButton className="!bg-primary !text-primary-foreground hover:!bg-primary/90 !rounded-xl !h-14 !px-10 !text-lg !font-semibold !shadow-lg !shadow-primary/30 !transition-all hover:!scale-105" />
+        </div>
+      ) : (
+        <Card className="w-full border-primary/40 bg-primary/10 backdrop-blur-sm shadow-lg shadow-primary/10">
+          <CardContent className="flex items-center justify-between py-5 px-6">
+            <div className="flex items-center gap-3">
+              <div className="w-3 h-3 rounded-full bg-primary animate-pulse" />
+              <span className="text-sm font-medium text-foreground">Wallet Connected</span>
+            </div>
+            <div className="flex items-center gap-5">
+              {balance !== null && (
+                <div className="text-lg font-semibold">
+                  <span className="text-foreground font-mono">{balance.toFixed(4)}</span>
+                  <span className="text-muted-foreground ml-2">SOL</span>
+                </div>
+              )}
+              <WalletMultiButton className="!bg-secondary !text-secondary-foreground hover:!bg-secondary/80 !rounded-lg !h-10 !text-sm !font-medium" />
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Counter Card */}
       <Card className="w-full border-border/50 bg-card/50 backdrop-blur-sm">
         <CardHeader className="text-center pb-2">
           <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
-            SOL Airdrops Received
+            Total SOL Airdrops
           </CardTitle>
         </CardHeader>
         <CardContent className="flex flex-col items-center gap-6 pt-4">
@@ -85,18 +97,17 @@ export function CounterDisplay() {
 
             <Button
               size="lg"
-              variant="outline"
               onClick={increment}
               disabled={!connected || loading}
-              className="h-14 px-5 rounded-full border-2 border-primary bg-primary/10 hover:bg-primary/20 transition-all flex items-center gap-2"
+              className="h-16 px-8 rounded-full bg-primary text-primary-foreground hover:bg-primary/90 transition-all flex items-center gap-3 shadow-lg shadow-primary/30 hover:scale-105"
               aria-label="Get 1 SOL airdrop"
             >
               {loading ? (
-                <Loader2 className="h-5 w-5 animate-spin" />
+                <Loader2 className="h-6 w-6 animate-spin" />
               ) : (
                 <>
-                  <Plus className="h-5 w-5" />
-                  <span className="font-semibold">1 SOL</span>
+                  <Plus className="h-6 w-6" />
+                  <span className="font-bold text-lg">+1 SOL</span>
                 </>
               )}
             </Button>
